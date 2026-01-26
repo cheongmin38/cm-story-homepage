@@ -1,0 +1,7 @@
+{
+  "name": "CM Story Corporate Website",
+  "description": "Official corporate website for CM Story, a sports-tech and hardware manufacturing company specializing in interactive sports equipment and content platforms.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
