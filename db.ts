@@ -1,92 +1,60 @@
 
-export const saveToDB = async (key: string, value: string): Promise<void> => {
+const DB_NAME = 'CMStoryDB';
+const DB_VERSION = 3; // 버전 업으로 스토어 재생성 보장
+const STORE_NAME = 'images';
+
+const openDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
-    // DB 버전을 명시하여 스토어 생성을 확실히 함
-    const request = indexedDB.open('CMStoryDB', 2);
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
 
     request.onupgradeneeded = (event: any) => {
       const db = event.target.result;
-      if (!db.objectStoreNames.contains('images')) {
-        db.createObjectStore('images');
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME);
       }
     };
 
-    request.onsuccess = (event: any) => {
-      const db = event.target.result;
-      // 스토어가 존재하지 않을 경우를 대비해 다시 확인
-      if (!db.objectStoreNames.contains('images')) {
-        db.close();
-        // 버전 업그레이드 강제 유도를 위해 재시도 로직이 필요할 수 있으나 여기서는 단순 에러 처리
-        reject(new Error('Images store missing'));
-        return;
-      }
-
-      const transaction = db.transaction(['images'], 'readwrite');
-      const store = transaction.objectStore('images');
-      
-      // put 요청 전에 로그를 남겨 상태를 추적할 수 있음
-      const putRequest = store.put(value, key);
-      
-      putRequest.onsuccess = () => {
-        console.log(`Successfully saved ${key} to DB`);
-        resolve();
-      };
-      
-      putRequest.onerror = () => {
-        console.error(`Failed to save ${key} to DB`);
-        reject(new Error('Put request failed'));
-      };
-      
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    };
-
-    request.onerror = (e) => {
-      console.error('IndexedDB Open Error:', e);
-      reject(new Error('Failed to open IndexedDB for saving'));
-    };
+    request.onsuccess = (event: any) => resolve(event.target.result);
+    request.onerror = (event: any) => reject(event.target.error);
   });
 };
 
+export const saveToDB = async (key: string, value: string): Promise<void> => {
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.put(value, key);
+
+      request.onsuccess = () => {
+        console.log(`[DB] ${key} 저장 완료`);
+        resolve();
+      };
+      request.onerror = () => reject(request.error);
+      
+      transaction.oncomplete = () => db.close();
+    });
+  } catch (err) {
+    console.error('[DB] 저장 실패:', err);
+  }
+};
+
 export const getFromDB = async (key: string): Promise<string | null> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open('CMStoryDB', 2);
+  try {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction([STORE_NAME], 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.get(key);
 
-    request.onupgradeneeded = (event: any) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains('images')) {
-        db.createObjectStore('images');
-      }
-    };
-
-    request.onsuccess = (event: any) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains('images')) {
-        resolve(null);
-        db.close();
-        return;
-      }
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error);
       
-      const transaction = db.transaction(['images'], 'readonly');
-      const store = transaction.objectStore('images');
-      const getRequest = store.get(key);
-      
-      getRequest.onsuccess = () => {
-        resolve(getRequest.result || null);
-      };
-      
-      getRequest.onerror = () => {
-        reject(new Error('Get request failed'));
-      };
-      
-      transaction.oncomplete = () => {
-        db.close();
-      };
-    };
-
-    request.onerror = () => {
-      reject(new Error('Failed to open IndexedDB for reading'));
-    };
-  });
+      transaction.oncomplete = () => db.close();
+    });
+  } catch (err) {
+    console.error('[DB] 불러오기 실패:', err);
+    return null;
+  }
 };

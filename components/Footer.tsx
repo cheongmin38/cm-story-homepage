@@ -37,14 +37,13 @@ const Footer: React.FC<FooterProps> = ({ language, customLogo }) => {
                {language === 'KR' ? '기업 정보' : 'Company'}
              </h5>
              <ul className="text-sm space-y-4 font-bold">
-               {/* 대표자 정보 간격 좁히기 */}
                <li className="flex items-center border-b border-white/5 pb-2">
-                 <span className="text-white/20 uppercase tracking-widest text-[9px] w-12">{language === 'KR' ? '대표' : 'CEO'}</span> 
-                 <span className="text-white/60 ml-2">{COMPANY_INFO.representative}</span>
+                 <span className="text-white/20 uppercase tracking-widest text-[9px] w-10">{language === 'KR' ? '대표' : 'CEO'}</span> 
+                 <span className="text-white/60 ml-1">{COMPANY_INFO.representative}</span>
                </li>
-               <li className="flex flex-col space-y-2 border-b border-white/5 pb-2">
+               <li className="flex flex-col space-y-1 border-b border-white/5 pb-2">
                  <span className="text-white/20 uppercase tracking-widest text-[9px]">{language === 'KR' ? '본사' : 'HQ'}</span> 
-                 <span className="text-white/60 text-xs">{COMPANY_INFO.address}</span>
+                 <span className="text-white/60 text-xs leading-relaxed">{COMPANY_INFO.address}</span>
                </li>
                <li className="text-white/60">{COMPANY_INFO.phone}</li>
                <li className="text-white/60">{COMPANY_INFO.email}</li>
