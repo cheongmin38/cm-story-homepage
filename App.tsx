@@ -23,13 +23,17 @@ const App: React.FC = () => {
   const [customBoxingImage, setCustomBoxingImage] = useState<string | null>(null);
   const [customFootballImage, setCustomFootballImage] = useState<string | null>(null);
 
-  // Safely get API Key to prevent "process is not defined" error on Vercel
-  const getApiKey = () => {
+  // Safely get API Key from environment variables without crashing the app
+  const getApiKey = (): string => {
     try {
-      return typeof process !== 'undefined' ? process.env.API_KEY : '';
-    } catch {
-      return '';
+      // Vercel or other environments might not have 'process' defined globally in the browser
+      if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+        return process.env.API_KEY;
+      }
+    } catch (e) {
+      console.warn("Process env access failed, likely in a browser environment without injection.");
     }
+    return '';
   };
 
   useEffect(() => {
@@ -54,7 +58,7 @@ const App: React.FC = () => {
   const processLogoWithAI = async (base64: string): Promise<string> => {
     const apiKey = getApiKey();
     if (!apiKey) {
-      console.warn("API Key is missing, skipping AI processing.");
+      console.warn("API Key is missing. Please set API_KEY in Vercel Environment Variables.");
       return base64;
     }
 
@@ -91,7 +95,7 @@ const App: React.FC = () => {
       }
       return processedBase64;
     } catch (error) {
-      console.error("AI Logo Refining Error:", error);
+      console.error("AI Logo Refining Error (Ensure API key is valid and has billing enabled):", error);
       return base64; 
     } finally {
       setIsProcessing(false);
