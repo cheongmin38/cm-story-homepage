@@ -23,15 +23,17 @@ const App: React.FC = () => {
   const [customBoxingImage, setCustomBoxingImage] = useState<string | null>(null);
   const [customFootballImage, setCustomFootballImage] = useState<string | null>(null);
 
-  // Safely get API Key from environment variables without crashing the app
+  // Vercel deployment safety: Check if process and process.env exist before accessing
   const getApiKey = (): string => {
     try {
-      // Vercel or other environments might not have 'process' defined globally in the browser
-      if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      if (typeof window !== 'undefined' && (window as any).process?.env?.API_KEY) {
+        return (window as any).process.env.API_KEY;
+      }
+      if (typeof process !== 'undefined' && process.env?.API_KEY) {
         return process.env.API_KEY;
       }
     } catch (e) {
-      console.warn("Process env access failed, likely in a browser environment without injection.");
+      console.warn("Could not access process.env.API_KEY");
     }
     return '';
   };
@@ -58,7 +60,7 @@ const App: React.FC = () => {
   const processLogoWithAI = async (base64: string): Promise<string> => {
     const apiKey = getApiKey();
     if (!apiKey) {
-      console.warn("API Key is missing. Please set API_KEY in Vercel Environment Variables.");
+      console.warn("API_KEY is not set in Environment Variables. AI processing skipped.");
       return base64;
     }
 
@@ -69,9 +71,8 @@ const App: React.FC = () => {
       const prompt = `
         CRITICAL TASK: BACKGROUND REMOVAL & LOGO ISOLATION
         1. Extract the main logo symbol and the brand name text "CM STORY" or "씨엠스토리".
-        2. MANDATORY: Remove 100% of all background pixels. 
+        2. Remove 100% of all background pixels. 
         3. The resulting image MUST have an ALPHA CHANNEL with 100% transparency.
-        4. NO white background, NO grey boxes.
       `;
       
       const response = await ai.models.generateContent({
@@ -95,7 +96,7 @@ const App: React.FC = () => {
       }
       return processedBase64;
     } catch (error) {
-      console.error("AI Logo Refining Error (Ensure API key is valid and has billing enabled):", error);
+      console.error("AI Logo Refining Error:", error);
       return base64; 
     } finally {
       setIsProcessing(false);
@@ -131,8 +132,8 @@ const App: React.FC = () => {
       {isProcessing && (
         <div className="fixed inset-0 z-[999] bg-black/98 backdrop-blur-3xl flex flex-col items-center justify-center text-white text-center px-6">
           <div className="w-24 h-24 border-t-4 border-r-4 border-[#FF003C] rounded-full animate-spin mb-10 shadow-[0_0_80px_rgba(255,0,60,0.7)]"></div>
-          <h2 className="text-3xl font-black uppercase tracking-[0.4em] mb-4 animate-pulse">정밀 배경 제거 중</h2>
-          <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">로고를 투명하게 정제하고 있습니다.</p>
+          <h2 className="text-3xl font-black uppercase tracking-[0.4em] mb-4 animate-pulse">AI 배경 제거 중</h2>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Vercel 환경 변수에 API_KEY가 설정되어 있어야 합니다.</p>
         </div>
       )}
 

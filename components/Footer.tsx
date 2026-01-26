@@ -41,7 +41,7 @@ const Footer: React.FC<FooterProps> = ({ language, customLogo }) => {
                  <span className="text-white/20 uppercase tracking-widest text-[9px] w-8">
                    {language === 'KR' ? '대표' : 'CEO'}
                  </span> 
-                 <span className="text-white/60 ml-1">: {COMPANY_INFO.representative}</span>
+                 <span className="text-white/60 ml-0.5">: {COMPANY_INFO.representative}</span>
                </li>
                <li className="flex flex-col space-y-1 border-b border-white/5 pb-2">
                  <span className="text-white/20 uppercase tracking-widest text-[9px]">{language === 'KR' ? '본사' : 'HQ'}</span> 
