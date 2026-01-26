@@ -23,7 +23,15 @@ const App: React.FC = () => {
   const [customBoxingImage, setCustomBoxingImage] = useState<string | null>(null);
   const [customFootballImage, setCustomFootballImage] = useState<string | null>(null);
 
-  // Load from IndexedDB on mount to ensure persistence
+  // Safely get API Key to prevent "process is not defined" error on Vercel
+  const getApiKey = () => {
+    try {
+      return typeof process !== 'undefined' ? process.env.API_KEY : '';
+    } catch {
+      return '';
+    }
+  };
+
   useEffect(() => {
     const loadPersistedData = async () => {
       try {
@@ -31,6 +39,7 @@ const App: React.FC = () => {
         const patent = await getFromDB('patent');
         const boxing = await getFromDB('boxing');
         const football = await getFromDB('football');
+        
         if (logo) setCustomLogo(logo);
         if (patent) setCustomPatent(patent);
         if (boxing) setCustomBoxingImage(boxing);
@@ -43,19 +52,22 @@ const App: React.FC = () => {
   }, []);
 
   const processLogoWithAI = async (base64: string): Promise<string> => {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      console.warn("API Key is missing, skipping AI processing.");
+      return base64;
+    }
+
     try {
       setIsProcessing(true);
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey });
       
       const prompt = `
         CRITICAL TASK: BACKGROUND REMOVAL & LOGO ISOLATION
         1. Extract the main logo symbol and the brand name text "CM STORY" or "씨엠스토리".
-        2. MANDATORY: Remove 100% of all background pixels. This is a CHROMAKEY-like effect. 
+        2. MANDATORY: Remove 100% of all background pixels. 
         3. The resulting image MUST have an ALPHA CHANNEL with 100% transparency.
-        4. NO white background, NO grey boxes, NO shadows, NO borders around the logo. 
-        5. Eliminate any artifacts, "CORP", or secondary small texts.
-        6. If the input has a white background, it must be completely transparent in the output.
-        7. Only the logo mark and primary text should exist in the final file.
+        4. NO white background, NO grey boxes.
       `;
       
       const response = await ai.models.generateContent({
@@ -100,43 +112,14 @@ const App: React.FC = () => {
     }
   };
 
-  const handlePatentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        setCustomPatent(base64);
-        await saveToDB('patent', base64);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleBoxingImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        setCustomBoxingImage(base64);
-        await saveToDB('boxing', base64);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleFootballImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        setCustomFootballImage(base64);
-        await saveToDB('football', base64);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleGenericUpload = async (file: File, key: string, setter: (val: string) => void) => {
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64 = reader.result as string;
+      setter(base64);
+      await saveToDB(key, base64);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -145,7 +128,7 @@ const App: React.FC = () => {
         <div className="fixed inset-0 z-[999] bg-black/98 backdrop-blur-3xl flex flex-col items-center justify-center text-white text-center px-6">
           <div className="w-24 h-24 border-t-4 border-r-4 border-[#FF003C] rounded-full animate-spin mb-10 shadow-[0_0_80px_rgba(255,0,60,0.7)]"></div>
           <h2 className="text-3xl font-black uppercase tracking-[0.4em] mb-4 animate-pulse">정밀 배경 제거 중</h2>
-          <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">로고를 크로마키처럼 투명하게 정제하여 사이트에 최적화하고 있습니다.</p>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">로고를 투명하게 정제하고 있습니다.</p>
         </div>
       )}
 
@@ -163,14 +146,14 @@ const App: React.FC = () => {
           language={language} 
           customBoxingImage={customBoxingImage}
           customFootballImage={customFootballImage}
-          onBoxingUpload={handleBoxingImageUpload}
-          onFootballUpload={handleFootballImageUpload}
+          onBoxingUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'boxing', setCustomBoxingImage)}
+          onFootballUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'football', setCustomFootballImage)}
         />
         <Solutions language={language} />
         <IPCert 
           language={language} 
           customPatent={customPatent} 
-          onPatentUpload={handlePatentUpload}
+          onPatentUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'patent', setCustomPatent)}
         />
         <FAQ language={language} />
         <Contact language={language} />
