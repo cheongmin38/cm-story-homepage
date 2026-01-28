@@ -1,21 +1,22 @@
 
-import React, { useState, useEffect } from 'react';
-import { Language } from './types';
+import React, { useState, useEffect, useRef } from 'react';
+import { Language, Page } from './types';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Company from './components/Company';
 import Products from './components/Products';
 import Solutions from './components/Solutions';
+import Notice from './components/Notice';
 import IPCert from './components/IPCert';
 import FAQ from './components/FAQ';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import { GoogleGenAI } from "@google/genai";
 import { saveToDB, getFromDB } from './db';
 
 const App: React.FC = () => {
   const [language, setLanguage] = useState<Language>('KR');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentPage, setCurrentPage] = useState<Page>('home');
+  const philosophyRef = useRef<HTMLElement>(null);
 
   // States for images
   const [customLogo, setCustomLogo] = useState<string | null>(null);
@@ -23,28 +24,33 @@ const App: React.FC = () => {
   const [customBoxingImage, setCustomBoxingImage] = useState<string | null>(null);
   const [customFootballImage, setCustomFootballImage] = useState<string | null>(null);
 
-  // Vercel deployment safety: Check if process and process.env exist before accessing
-  const getApiKey = (): string => {
-    try {
-      if (typeof window !== 'undefined' && (window as any).process?.env?.API_KEY) {
-        return (window as any).process.env.API_KEY;
-      }
-      if (typeof process !== 'undefined' && process.env?.API_KEY) {
-        return process.env.API_KEY;
-      }
-    } catch (e) {
-      console.warn("Could not access process.env.API_KEY");
-    }
-    return '';
-  };
+  // Scroll to top on page change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentPage]);
 
+  // Reveal Animation Effect (Fade-only to avoid movement)
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('active');
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-only').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, [currentPage]);
+
+  // Persistent Data Loading
   useEffect(() => {
     const loadPersistedData = async () => {
       try {
-        const logo = await getFromDB('logo');
-        const patent = await getFromDB('patent');
-        const boxing = await getFromDB('boxing');
-        const football = await getFromDB('football');
+        const [logo, patent, boxing, football] = await Promise.all([
+          getFromDB('logo'),
+          getFromDB('patent'),
+          getFromDB('boxing'),
+          getFromDB('football')
+        ]);
         
         if (logo) setCustomLogo(logo);
         if (patent) setCustomPatent(patent);
@@ -57,61 +63,14 @@ const App: React.FC = () => {
     loadPersistedData();
   }, []);
 
-  const processLogoWithAI = async (base64: string): Promise<string> => {
-    const apiKey = getApiKey();
-    if (!apiKey) {
-      console.warn("API_KEY is not set in Environment Variables. AI processing skipped.");
-      return base64;
-    }
-
-    try {
-      setIsProcessing(true);
-      const ai = new GoogleGenAI({ apiKey });
-      
-      const prompt = `
-        CRITICAL TASK: BACKGROUND REMOVAL & LOGO ISOLATION
-        1. Extract the main logo symbol and the brand name text "CM STORY" or "씨엠스토리".
-        2. Remove 100% of all background pixels. 
-        3. The resulting image MUST have an ALPHA CHANNEL with 100% transparency.
-      `;
-      
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
-        contents: {
-          parts: [
-            { inlineData: { data: base64.split(',')[1], mimeType: 'image/png' } },
-            { text: prompt }
-          ]
-        }
-      });
-
-      let processedBase64 = base64;
-      if (response.candidates?.[0]?.content?.parts) {
-        for (const part of response.candidates[0].content.parts) {
-          if (part.inlineData) {
-            processedBase64 = `data:image/png;base64,${part.inlineData.data}`;
-            break;
-          }
-        }
-      }
-      return processedBase64;
-    } catch (error) {
-      console.error("AI Logo Refining Error:", error);
-      return base64; 
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const originalBase64 = reader.result as string;
-        const cleanedLogo = await processLogoWithAI(originalBase64);
-        setCustomLogo(cleanedLogo);
-        await saveToDB('logo', cleanedLogo);
+        const base64 = reader.result as string;
+        setCustomLogo(base64);
+        await saveToDB('logo', base64);
       };
       reader.readAsDataURL(file);
     }
@@ -127,44 +86,123 @@ const App: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  return (
-    <div className="antialiased font-sans relative">
-      {isProcessing && (
-        <div className="fixed inset-0 z-[999] bg-black/98 backdrop-blur-3xl flex flex-col items-center justify-center text-white text-center px-6">
-          <div className="w-24 h-24 border-t-4 border-r-4 border-[#FF003C] rounded-full animate-spin mb-10 shadow-[0_0_80px_rgba(255,0,60,0.7)]"></div>
-          <h2 className="text-3xl font-black uppercase tracking-[0.4em] mb-4 animate-pulse">AI 배경 제거 중</h2>
-          <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Vercel 환경 변수에 API_KEY가 설정되어 있어야 합니다.</p>
-        </div>
-      )}
+  const renderContent = () => {
+    switch (currentPage) {
+      case 'home':
+        return (
+          <>
+            <Hero language={language} onNavigate={setCurrentPage} />
+            
+            <section ref={philosophyRef} className="py-24 md:py-32 bg-black border-y border-white/5 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-full bg-grid opacity-5 pointer-events-none"></div>
+              <div className="max-w-7xl mx-auto px-6">
+                <div className="grid lg:grid-cols-12 gap-12 md:gap-16 items-start">
+                  <div className="lg:col-span-7 fade-only">
+                    <div className="flex items-center space-x-4 mb-6">
+                      <span className="w-8 h-[1px] bg-[#FF003C]"></span>
+                      <h2 className="mono text-[9px] font-black text-[#FF003C] tracking-[0.5em] uppercase">
+                        {language === 'KR' ? 'CM STORY는 무엇을 만드는 회사인가?' : 'WHAT DOES CM STORY CREATE?'}
+                      </h2>
+                    </div>
+                    
+                    <h3 className="heading-premium text-sm md:text-base text-white/90 leading-relaxed tracking-widest mb-10">
+                      {language === 'KR' 
+                        ? "CM STORY는 스포츠를 단순한 운동이 아닌 ‘참여형 콘텐츠’로 재정의하는 기업입니다.\n우리는 실제 타격, 실제 플레이, 실제 경쟁이 일어나는 현장 중심의 스포츠 경험을 기술과 데이터로 연결하여 지속 가능한 플랫폼으로 발전시키고 있습니다." 
+                        : "CM STORY redefines sports not just as exercise, but as 'interactive content.' We connect field-based sports experiences—where real striking, real play, and real competition occur—with technology and data to develop them into sustainable platforms."}
+                    </h3>
 
+                    <div className="space-y-4 mb-10">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#FF003C]"></div>
+                        <p className="text-[11px] font-bold text-white/60 tracking-wider">
+                          {language === 'KR' ? '현장에서 바로 수익이 발생하는 스포츠 하드웨어' : 'Sports hardware generating immediate revenue on-site'}
+                        </p>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[#FF003C]"></div>
+                        <p className="text-[11px] font-bold text-white/60 tracking-wider">
+                          {language === 'KR' ? '사람과 팀을 연결하는 스포츠 매칭 플랫폼' : 'Sports matching platforms connecting people and teams'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="lg:col-span-5 fade-only" style={{ transitionDelay: '0.3s' }}>
+                    <div className="border-l border-white/10 pl-10 space-y-8">
+                      <p className="text-[10px] md:text-[11px] text-white/30 leading-loose font-medium tracking-wider">
+                        {language === 'KR' 
+                          ? "이 두 축이 만나 하나의 생태계를 구성합니다. CM스토리는 장비 제조를 넘어 비즈니스의 정점에 도달할 수 있는 솔루션을 제공합니다."
+                          : "These two pillars meet to form a single ecosystem. CM Story provides solutions to reach the peak of business beyond equipment manufacturing."}
+                      </p>
+                      <button 
+                        onClick={() => setCurrentPage('company')}
+                        className="group flex items-center space-x-4 text-white/40 hover:text-[#FF003C] transition-colors"
+                      >
+                        <span className="mono text-[8px] font-black tracking-[0.4em] uppercase transition-colors">
+                          {language === 'KR' ? '회사소개' : 'VIEW_ORIGIN'}
+                        </span>
+                        <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#FF003C] group-hover:border-[#FF003C] transition-all">
+                          <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </>
+        );
+      case 'company':
+        return <Company language={language} />;
+      case 'products':
+        return (
+          <Products 
+            language={language} 
+            customBoxingImage={customBoxingImage}
+            customFootballImage={customFootballImage}
+            onBoxingUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'boxing', setCustomBoxingImage)}
+            onFootballUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'football', setCustomFootballImage)}
+          />
+        );
+      case 'solutions':
+        return <Solutions language={language} onNavigate={setCurrentPage} />;
+      case 'notice':
+        return <Notice language={language} />;
+      case 'ipcert':
+        return (
+          <IPCert 
+            language={language} 
+            customPatent={customPatent} 
+            onPatentUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'patent', setCustomPatent)}
+          />
+        );
+      case 'contact':
+        return <Contact language={language} />;
+      default:
+        return <Hero language={language} onNavigate={setCurrentPage} />;
+    }
+  };
+
+  return (
+    <div className="antialiased font-sans relative min-h-screen bg-black">
       <Navbar 
         language={language} 
         setLanguage={setLanguage} 
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
         customLogo={customLogo} 
         onLogoUpload={handleLogoUpload}
       />
       
       <main>
-        <Hero language={language} />
-        <Company language={language} />
-        <Products 
-          language={language} 
-          customBoxingImage={customBoxingImage}
-          customFootballImage={customFootballImage}
-          onBoxingUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'boxing', setCustomBoxingImage)}
-          onFootballUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'football', setCustomFootballImage)}
-        />
-        <Solutions language={language} />
-        <IPCert 
-          language={language} 
-          customPatent={customPatent} 
-          onPatentUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'patent', setCustomPatent)}
-        />
-        <FAQ language={language} />
-        <Contact language={language} />
+        {renderContent()}
       </main>
 
-      <Footer language={language} customLogo={customLogo} />
+      <Footer 
+        language={language} 
+        customLogo={customLogo} 
+        onNavigate={setCurrentPage}
+      />
     </div>
   );
 };

@@ -16,7 +16,7 @@ const PatentCertificate: React.FC<{
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="relative w-full max-w-md mx-auto aspect-[1/1.414] bg-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.4)] border border-slate-200 p-2 overflow-hidden group">
+    <div className="relative w-full max-w-md mx-auto aspect-[1/1.414] bg-[#111] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10 p-2 overflow-hidden group rounded-lg">
       <input 
         type="file" 
         ref={fileInputRef} 
@@ -26,7 +26,7 @@ const PatentCertificate: React.FC<{
       />
       
       <div 
-        className="relative w-full h-full bg-[#FCFCFC] overflow-hidden flex flex-col cursor-pointer"
+        className="relative w-full h-full bg-[#0A0A0A] overflow-hidden flex flex-col cursor-pointer"
         onClick={() => fileInputRef.current?.click()}
       >
         {customPatent ? (
@@ -34,22 +34,22 @@ const PatentCertificate: React.FC<{
             <img 
               src={customPatent} 
               alt="Uploaded Patent" 
-              className="w-full h-full object-contain" 
+              className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity" 
             />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-               <div className="bg-white/90 text-black px-4 py-2 text-[10px] font-black uppercase tracking-widest shadow-2xl border border-black/10">
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+               <div className="bg-white text-black px-4 py-2 text-[10px] font-black uppercase tracking-widest shadow-2xl">
                  이미지 교체하기
                </div>
             </div>
           </div>
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 group-hover:border-[#FF003C] transition-colors bg-slate-50/50">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg mb-4 group-hover:scale-110 transition-transform">
-              <svg className="w-8 h-8 text-slate-400 group-hover:text-[#FF003C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-full h-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-white/5 group-hover:border-[#FF003C] transition-colors bg-white/[0.02]">
+            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center shadow-lg mb-4 group-hover:scale-110 transition-transform">
+              <svg className="w-8 h-8 text-white/20 group-hover:text-[#FF003C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <p className="text-[11px] font-black uppercase tracking-widest text-slate-600 group-hover:text-[#FF003C] text-center leading-relaxed">
+            <p className="text-[11px] font-black uppercase tracking-widest text-white/30 group-hover:text-[#FF003C] text-center leading-relaxed">
               직접 준비하신<br/>특허증 이미지를 업로드하세요
             </p>
           </div>
@@ -77,7 +77,7 @@ const IPCert: React.FC<IPCertProps> = ({ language, customPatent, onPatentUpload 
   ];
 
   return (
-    <section id="ipcert" className="py-32 bg-slate-50 overflow-hidden" ref={sectionRef}>
+    <section id="ipcert" className="py-32 bg-black overflow-hidden border-t border-white/5" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-20 items-center mb-24">
           <div className="reveal order-2 lg:order-1">
@@ -89,10 +89,10 @@ const IPCert: React.FC<IPCertProps> = ({ language, customPatent, onPatentUpload 
               <span className="w-8 h-[2px] bg-[#FF003C] mr-4"></span>
               {language === 'KR' ? '지식재산권 및 기술 인증' : 'Intellectual Property'}
             </h2>
-            <h3 className="text-5xl md:text-6xl font-black text-black tracking-tighter uppercase mb-8 leading-[0.95]">
+            <h3 className="text-5xl md:text-6xl font-black text-white tracking-tighter uppercase mb-8 leading-[0.95]">
               {language === 'KR' ? "특허로 증명된\n독보적 기술력" : "Verified By\nCore Patents"}
             </h3>
-            <p className="text-lg text-slate-500 font-medium mb-10 leading-relaxed max-w-xl">
+            <p className="text-lg text-white/40 font-medium mb-10 leading-relaxed max-w-xl">
               {language === 'KR' 
                 ? "CM스토리는 '복싱유희기구(제 10-2863896 호)'를 비롯한 핵심 하드웨어 기술을 국가 공인 특허로 보호받고 있습니다. 고객님의 신뢰를 위해 투명하게 기술력을 공개합니다." 
                 : "CM Story's core hardware technologies, including 'Boxing Play Apparatus (No. 10-2863896)', are protected by official patents. We transparently demonstrate our technological prowess for your trust."}
@@ -100,11 +100,11 @@ const IPCert: React.FC<IPCertProps> = ({ language, customPatent, onPatentUpload 
             
             <div className="space-y-4">
               {CERTIFICATIONS.map((cert, idx) => (
-                <div key={idx} className="flex items-center space-x-6 p-4 bg-white border border-slate-200 group hover:border-black transition-all">
+                <div key={idx} className="flex items-center space-x-6 p-4 bg-white/[0.03] border border-white/5 group hover:border-[#FF003C]/50 transition-all rounded-lg">
                   <div className="w-2 h-2 bg-[#FF003C]"></div>
                   <div>
-                    <div className="text-xs font-black text-black uppercase tracking-tight">{cert.title}</div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{cert.detail}</div>
+                    <div className="text-xs font-black text-white/80 uppercase tracking-tight">{cert.title}</div>
+                    <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{cert.detail}</div>
                   </div>
                 </div>
               ))}
@@ -112,12 +112,12 @@ const IPCert: React.FC<IPCertProps> = ({ language, customPatent, onPatentUpload 
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-px bg-slate-200 border border-slate-200">
+        <div className="grid md:grid-cols-3 gap-8">
           {certCards.map((item, i) => (
-            <div key={i} className="bg-white p-12 reveal" style={{ transitionDelay: `${(i + 3) * 0.1}s` }}>
-              <div className="text-4xl font-black text-slate-100 mb-8 italic">{item.tag}</div>
-              <h5 className="text-sm font-black uppercase tracking-widest mb-4">{item.title[language]}</h5>
-              <p className="text-xs text-slate-500 leading-relaxed font-medium">{item.desc[language]}</p>
+            <div key={i} className="bg-white/[0.02] p-12 reveal border border-white/5 rounded-[30px] hover:bg-white/[0.04] transition-colors" style={{ transitionDelay: `${(i + 3) * 0.1}s` }}>
+              <div className="text-4xl font-black text-white/5 mb-8 italic">{item.tag}</div>
+              <h5 className="text-sm font-black uppercase tracking-widest mb-4 text-[#FF003C]">{item.title[language]}</h5>
+              <p className="text-xs text-white/40 leading-relaxed font-medium">{item.desc[language]}</p>
             </div>
           ))}
         </div>

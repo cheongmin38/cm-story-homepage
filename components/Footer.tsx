@@ -1,28 +1,28 @@
 
 import React from 'react';
-import { COMPANY_INFO } from '../constants';
-import { Language } from '../types';
+import { COMPANY_INFO, NAV_ITEMS } from '../constants';
+import { Language, Page } from '../types';
 import { DefaultLogoSVG } from './Navbar';
 
 interface FooterProps {
   language: Language;
   customLogo: string | null;
+  onNavigate: (page: Page) => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ language, customLogo }) => {
+const Footer: React.FC<FooterProps> = ({ language, customLogo, onNavigate }) => {
   return (
     <footer className="bg-black text-white/30 py-40 border-t border-white/5 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-12 gap-20 pb-32">
           <div className="md:col-span-6">
-            <div className="mb-12">
+            <div className="mb-8 cursor-pointer" onClick={() => onNavigate('home')}>
               {customLogo ? (
-                <div className="flex items-center space-x-6">
-                  <img src={customLogo} alt="Logo" className="h-12 w-auto object-contain" />
-                  <span className="text-white font-black text-3xl tracking-tighter uppercase">CM STORY</span>
+                <div className="flex items-center space-x-4">
+                  <img src={customLogo} alt="Logo" className="h-16 w-auto object-contain" />
                 </div>
               ) : (
-                <DefaultLogoSVG className="h-10 text-white" />
+                <DefaultLogoSVG className="h-20" />
               )}
             </div>
             <p className="text-lg leading-relaxed max-w-md font-medium text-white/20">
@@ -54,12 +54,19 @@ const Footer: React.FC<FooterProps> = ({ language, customLogo }) => {
 
           <div className="md:col-span-3">
              <h5 className="text-white font-black mb-10 uppercase text-[10px] tracking-[0.5em] opacity-40">
-               {language === 'KR' ? '고객 연결' : 'Connect'}
+               {language === 'KR' ? '메뉴' : 'Explore'}
              </h5>
              <ul className="text-sm space-y-4 font-bold">
-               <li><button className="hover:text-[#FF003C] transition-colors">Instagram</button></li>
-               <li><button className="hover:text-[#FF003C] transition-colors">Youtube</button></li>
-               <li><button className="hover:text-[#FF003C] transition-colors">Linkedin</button></li>
+               {NAV_ITEMS.map(item => (
+                 <li key={item.id}>
+                    <button 
+                      onClick={() => onNavigate(item.id)}
+                      className="hover:text-[#FF003C] transition-colors uppercase tracking-widest text-[10px]"
+                    >
+                      {item.label[language]}
+                    </button>
+                 </li>
+               ))}
              </ul>
           </div>
         </div>

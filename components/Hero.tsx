@@ -1,80 +1,87 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { HERO_CONTENT } from '../constants';
-import { Language } from '../types';
+import { Language, Page } from '../types';
+import ThreeBackground from './ThreeBackground';
 
-interface HeroProps { language: Language; }
+interface HeroProps { 
+  language: Language; 
+  onNavigate: (page: Page) => void;
+}
 
-const Hero: React.FC<HeroProps> = ({ language }) => {
+const Hero: React.FC<HeroProps> = ({ language, onNavigate }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('active');
+      });
+    }, { threshold: 0.1 });
+
+    containerRef.current?.querySelectorAll('.fade-only').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section 
+      ref={containerRef}
       id="home" 
-      className="relative min-h-screen flex flex-col items-center justify-center pt-20 bg-black overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-center bg-black overflow-hidden pt-20"
     >
-      {/* 고정된 위치에서 부드럽게 박동하는 배경 글로우 */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1400px] h-[800px] pointer-events-none z-0">
-        <div 
-          className="w-full h-full animate-glow-pulse opacity-20"
-          style={{
-            background: 'radial-gradient(circle, rgba(255, 0, 60, 0.4) 0%, rgba(255, 0, 60, 0.1) 40%, transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        ></div>
-      </div>
-
-      <style>{`
-        @keyframes glowPulse {
-          0%, 100% { opacity: 0.1; transform: scale(1); }
-          50% { opacity: 0.25; transform: scale(1.05); }
-        }
-        .animate-glow-pulse {
-          animation: glowPulse 6s ease-in-out infinite;
-        }
-      `}</style>
-
-      {/* 정적인 배경 장식 요소 */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-      </div>
+      <ThreeBackground />
       
-      <div className="relative z-10 text-center max-w-5xl px-6">
-        <div className="inline-block mb-8 py-2 px-4 rounded-full glass border border-white/10">
-           <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#FF003C]">
-             {language === 'KR' ? '혁신적인 스포츠 기술력' : 'Premium Sports Technology'}
-           </span>
-        </div>
-        
-        <h1 className="text-xl md:text-[2.33rem] font-black leading-tight tracking-tighter uppercase mb-12 text-gradient">
-          {HERO_CONTENT.title[language].split('\n').map((line, i) => (
-            <span key={i} className="block">{line}</span>
-          ))}
-        </h1>
-        
-        <p className="text-base md:text-xl text-white/50 max-w-2xl mx-auto leading-relaxed font-light mb-16">
-          {HERO_CONTENT.subtitle[language]}
-        </p>
-        
-        <div className="flex flex-wrap justify-center gap-6">
-          <button 
-            onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
-            className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-[#FF003C] hover:text-white transition-all duration-500 rounded-full shadow-2xl"
-          >
-            {language === 'KR' ? '기술 혁신 살펴보기' : 'Explore Innovations'}
-          </button>
-          <button 
-            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-            className="px-12 py-5 glass text-white font-black uppercase tracking-widest text-xs hover:bg-white hover:text-black transition-all duration-500 rounded-full"
-          >
-            {language === 'KR' ? '비즈니스 파트너십' : 'Partner with Us'}
-          </button>
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent opacity-60 z-[1] pointer-events-none"></div>
+      
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full">
+        {/* 움직이지 않는 페이드 인 효과 적용 */}
+        <div className="fade-only mb-12">
+          <div className="flex items-center space-x-4 mb-8">
+            <span className="w-10 h-[1px] bg-[#FF003C]"></span>
+            <span className="mono text-[10px] font-bold text-[#FF003C] tracking-[0.5em] uppercase">
+              {language === 'KR' ? '스포츠 테크놀로지의 정점' : 'PEAK SPORTS ENGINEERING'}
+            </span>
+          </div>
+          
+          {/* 타이틀 폰트 크기 1/3 축소: text-6xl -> text-2xl, text-[8.5rem] -> text-[2.8rem] */}
+          <h1 className="heading-premium text-2xl md:text-[2.8rem] text-white tracking-tighter mb-10 leading-[1.2] mix-blend-difference">
+            {HERO_CONTENT.title[language].split('\n').map((line, i) => (
+              <span key={i} className="block text-gradient transition-all duration-1000 hover:tracking-normal cursor-default">
+                {line}
+              </span>
+            ))}
+          </h1>
+          
+          <div className="max-w-xl border-l border-white/10 pl-10 mb-16">
+            <p className="text-sm md:text-base text-white/40 leading-relaxed font-light">
+              {HERO_CONTENT.subtitle[language]}
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-10">
+            <button 
+              onClick={() => onNavigate('products')}
+              className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] transition-all duration-500 hover:bg-[#FF003C] hover:text-white"
+            >
+              <span className="relative z-10">{language === 'KR' ? '하드웨어 라인업' : 'HARDWARE LINEUP'}</span>
+            </button>
+            <button 
+              onClick={() => onNavigate('contact')}
+              className="px-10 py-5 border border-white/10 text-white/60 font-black uppercase tracking-[0.3em] text-[10px] hover:border-white hover:text-white transition-all duration-500"
+            >
+              {language === 'KR' ? '비즈니스 협력' : 'INQUIRY'}
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-30 pointer-events-none">
-        <div className="text-[9px] font-bold uppercase tracking-[0.4em] mb-4">
-          {language === 'KR' ? '더 알아보기' : 'Discover More'}
+      <div className="absolute bottom-12 left-12 fade-only opacity-10 hidden md:block z-10" style={{ transitionDelay: '0.5s' }}>
+        <div className="mono text-[8px] tracking-[0.8em] uppercase text-white mb-3">SYSTEM SPECIFICATIONS</div>
+        <div className="flex space-x-12 text-[8px] font-bold tracking-widest text-white/40">
+          <span className="flex items-center"><span className="w-1 h-1 bg-[#FF003C] mr-2"></span>KC CERTIFIED</span>
+          <span className="flex items-center"><span className="w-1 h-1 bg-[#FF003C] mr-2"></span>SENSING_ACCURACY_99.9%</span>
+          <span className="flex items-center"><span className="w-1 h-1 bg-[#FF003C] mr-2"></span>REVENUE_ENGINE_V2.5</span>
         </div>
-        <div className="w-[1px] h-12 bg-gradient-to-b from-white to-transparent"></div>
       </div>
     </section>
   );

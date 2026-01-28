@@ -1,5 +1,5 @@
 
-import { NavItem, ProductItem, FAQItem, BusinessModel } from './types';
+import { NavItem, ProductItem, FAQItem, BusinessModel, NoticeItem } from './types';
 
 export const COMPANY_INFO = {
   name: "CM스토리 (CM Story)",
@@ -14,15 +14,16 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'home', label: { KR: '홈', EN: 'Home' } },
   { id: 'company', label: { KR: '회사소개', EN: 'Company' } },
   { id: 'products', label: { KR: '제품소개', EN: 'Products' } },
-  { id: 'solutions', label: { KR: '솔루션/비즈니스', EN: 'Solutions' } },
+  { id: 'solutions', label: { KR: '비즈니스', EN: 'Solutions' } },
+  { id: 'notice', label: { KR: '공지사항', EN: 'Notice' } },
   { id: 'ipcert', label: { KR: '인증/특허', EN: 'IP & Cert' } },
   { id: 'contact', label: { KR: '문의하기', EN: 'Contact' } },
 ];
 
 export const HERO_CONTENT = {
   title: {
-    KR: "CM스토리는 크라운 복싱 미트 머신으로\n현장형 스포츠 기기와\n운영 모델을 함께 설계하는 제조 기업입니다",
-    EN: "CM Story: Designing\nField-Based Sports Devices\n& Models through Innovation"
+    KR: "CM STORY는 현장에서 작동하는 스포츠 경험을\n기기·플랫폼·운영 모델까지 함께 설계하는 스포츠 테크 제조 기업입니다.",
+    EN: "CM STORY: Designing sports experiences\nfrom devices to platforms and operational models."
   },
   subtitle: {
     KR: "우리는 스포츠 현장을 데이터로 바꾸고, 공간에 최적화된 하드웨어와 콘텐츠 기술을 제공합니다.",
@@ -128,6 +129,41 @@ export const BUSINESS_MODELS: BusinessModel[] = [
       KR: "이용 횟수, 시간대별 반응, 인기 콘텐츠 데이터를 분석하여 설치처별 맞춤형 운영 가이드를 제공합니다.",
       EN: "Analyze usage frequency and popular content to provide customized operation guides."
     }
+  }
+];
+
+export const NOTICES: NoticeItem[] = [
+  {
+    id: 1,
+    date: "2025.03.10",
+    category: { KR: "공지", EN: "NOTICE" },
+    title: { KR: "CM스토리 공식 홈페이지 리뉴얼 오픈 안내", EN: "CM Story Official Website Renewal Open" },
+    isNew: true
+  },
+  {
+    id: 2,
+    date: "2025.02.25",
+    category: { KR: "기술", EN: "TECH" },
+    title: { KR: "크라운 복싱 미트 머신 S/W 업데이트 (v2.4)", EN: "Crown Boxing Mitt Machine S/W Update (v2.4)" },
+    isNew: true
+  },
+  {
+    id: 3,
+    date: "2025.01.15",
+    category: { KR: "특허", EN: "PATENT" },
+    title: { KR: "복싱유희기구 핵심 기술 특허 등록 완료", EN: "Core Tech Patent Registered for Boxing Play Apparatus" }
+  },
+  {
+    id: 4,
+    date: "2024.12.20",
+    category: { KR: "이벤트", EN: "EVENT" },
+    title: { KR: "겨울 시즌 한정 수익쉐어 프로모션 진행", EN: "Winter Season Revenue Share Promotion" }
+  },
+  {
+    id: 5,
+    date: "2024.11.05",
+    category: { KR: "박람회", EN: "EXPO" },
+    title: { KR: "2024 글로벌 스포츠 테크 박람회 참가 성료", EN: "Participation in 2024 Global Sports Tech Expo" }
   }
 ];
 

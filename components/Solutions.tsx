@@ -1,13 +1,16 @@
 
 import React from 'react';
 import { BUSINESS_MODELS } from '../constants';
-import { Language } from '../types';
+import { Language, Page } from '../types';
 
-interface SolutionsProps { language: Language; }
+interface SolutionsProps { 
+  language: Language; 
+  onNavigate: (page: Page) => void;
+}
 
-const Solutions: React.FC<SolutionsProps> = ({ language }) => {
+const Solutions: React.FC<SolutionsProps> = ({ language, onNavigate }) => {
   return (
-    <section id="solutions" className="py-40 bg-black">
+    <section id="solutions" className="py-40 bg-black min-h-screen">
       <div className="max-w-7xl mx-auto px-6">
         <div className="mb-32">
           <h2 className="text-[11px] font-black text-[#FF003C] tracking-[0.5em] uppercase mb-8">
@@ -48,7 +51,7 @@ const Solutions: React.FC<SolutionsProps> = ({ language }) => {
             </p>
           </div>
           <button 
-            onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => onNavigate('contact')}
             className="px-16 py-8 bg-[#FF003C] text-white font-black uppercase tracking-widest text-[10px] hover:scale-105 transition-transform rounded-full shadow-[0_20px_40px_rgba(255,0,60,0.3)]"
           >
             {language === 'KR' ? '전략 상담 신청' : 'Request Strategy'}

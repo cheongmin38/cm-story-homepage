@@ -37,7 +37,7 @@ const Company: React.FC<CompanyProps> = ({ language }) => {
   ];
 
   return (
-    <section id="company" className="py-32 bg-white overflow-hidden" ref={containerRef}>
+    <section id="company" className="py-32 bg-black overflow-hidden border-t border-white/5" ref={containerRef}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid md:grid-cols-12 gap-16 items-start">
           <div className="md:col-span-6 reveal">
@@ -45,10 +45,10 @@ const Company: React.FC<CompanyProps> = ({ language }) => {
               <span className="w-8 h-[2px] bg-[#FF003C] mr-4"></span>
               The Origin
             </h2>
-            <h3 className="text-5xl md:text-6xl font-black text-black leading-[1.1] tracking-tighter mb-10 uppercase">
+            <h3 className="text-5xl md:text-6xl font-black text-white leading-[1.1] tracking-tighter mb-10 uppercase">
               {language === 'KR' ? "제조 그 이상의\n가치를 설계하다" : "Engineering Value\nBeyond Tools"}
             </h3>
-            <div className="w-full aspect-video bg-[#0A0A0A] overflow-hidden group mb-10">
+            <div className="w-full aspect-video bg-[#0A0A0A] overflow-hidden group mb-10 border border-white/10 rounded-2xl">
               <img 
                 src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200" 
                 className="w-full h-full object-cover grayscale opacity-50 group-hover:scale-110 transition-transform duration-1000"
@@ -58,18 +58,18 @@ const Company: React.FC<CompanyProps> = ({ language }) => {
           </div>
           
           <div className="md:col-span-6 md:pt-24 reveal" style={{ transitionDelay: '0.2s' }}>
-            <p className="text-xl text-slate-600 leading-relaxed font-medium mb-12 border-l-4 border-black pl-8">
+            <p className="text-xl text-white/60 leading-relaxed font-medium mb-12 border-l-4 border-[#FF003C] pl-8">
               {COMPANY_DETAILS.description[language]}
             </p>
             
             <div className="grid grid-cols-1 gap-4">
               {steps.map((step, idx) => (
-                <div key={idx} className="group flex items-center justify-between p-6 border border-slate-100 hover:border-black transition-all hover:translate-x-4 cursor-default">
+                <div key={idx} className="group flex items-center justify-between p-6 border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-[#FF003C]/30 transition-all hover:translate-x-4 cursor-default rounded-xl">
                   <div className="flex items-center space-x-6">
-                    <span className="text-sm font-black text-slate-300 group-hover:text-[#FF003C] transition-colors">0{idx + 1}</span>
-                    <span className="text-lg font-black uppercase tracking-tight">{step.title[language]}</span>
+                    <span className="text-sm font-black text-white/20 group-hover:text-[#FF003C] transition-colors">0{idx + 1}</span>
+                    <span className="text-lg font-black uppercase tracking-tight text-white/80 group-hover:text-white transition-colors">{step.title[language]}</span>
                   </div>
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-xs font-bold text-white/20 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                     {step.desc[language]}
                   </span>
                 </div>

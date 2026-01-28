@@ -1,8 +1,9 @@
 
 export type Language = 'KR' | 'EN';
+export type Page = 'home' | 'company' | 'products' | 'solutions' | 'notice' | 'ipcert' | 'contact';
 
 export interface NavItem {
-  id: string;
+  id: Page;
   label: {
     KR: string;
     EN: string;
@@ -27,4 +28,12 @@ export interface FAQItem {
 export interface BusinessModel {
   title: { KR: string; EN: string };
   desc: { KR: string; EN: string };
+}
+
+export interface NoticeItem {
+  id: number;
+  date: string;
+  category: { KR: string; EN: string };
+  title: { KR: string; EN: string };
+  isNew?: boolean;
 }
