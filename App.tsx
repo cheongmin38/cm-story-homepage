@@ -8,28 +8,20 @@ import Products from './components/Products';
 import Solutions from './components/Solutions';
 import Notice from './components/Notice';
 import IPCert from './components/IPCert';
-import FAQ from './components/FAQ';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
-import { saveToDB, getFromDB } from './db';
 
 const App: React.FC = () => {
   const [language, setLanguage] = useState<Language>('KR');
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const philosophyRef = useRef<HTMLElement>(null);
 
-  // States for images
-  const [customLogo, setCustomLogo] = useState<string | null>(null);
-  const [customPatent, setCustomPatent] = useState<string | null>(null);
-  const [customBoxingImage, setCustomBoxingImage] = useState<string | null>(null);
-  const [customFootballImage, setCustomFootballImage] = useState<string | null>(null);
-
   // Scroll to top on page change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentPage]);
 
-  // Reveal Animation Effect (Fade-only to avoid movement)
+  // Reveal Animation Effect
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -38,53 +30,10 @@ const App: React.FC = () => {
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.fade-only').forEach(el => observer.observe(el));
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    
     return () => observer.disconnect();
   }, [currentPage]);
-
-  // Persistent Data Loading
-  useEffect(() => {
-    const loadPersistedData = async () => {
-      try {
-        const [logo, patent, boxing, football] = await Promise.all([
-          getFromDB('logo'),
-          getFromDB('patent'),
-          getFromDB('boxing'),
-          getFromDB('football')
-        ]);
-        
-        if (logo) setCustomLogo(logo);
-        if (patent) setCustomPatent(patent);
-        if (boxing) setCustomBoxingImage(boxing);
-        if (football) setCustomFootballImage(football);
-      } catch (err) {
-        console.error("Failed to load data from IndexedDB:", err);
-      }
-    };
-    loadPersistedData();
-  }, []);
-
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        setCustomLogo(base64);
-        await saveToDB('logo', base64);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleGenericUpload = async (file: File, key: string, setter: (val: string) => void) => {
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64 = reader.result as string;
-      setter(base64);
-      await saveToDB(key, base64);
-    };
-    reader.readAsDataURL(file);
-  };
 
   const renderContent = () => {
     switch (currentPage) {
@@ -105,23 +54,23 @@ const App: React.FC = () => {
                       </h2>
                     </div>
                     
-                    <h3 className="heading-premium text-sm md:text-base text-white/90 leading-relaxed tracking-widest mb-10">
+                    <h3 className="heading-premium text-sm md:text-base text-white/90 leading-relaxed tracking-widest mb-10 whitespace-pre-line">
                       {language === 'KR' 
-                        ? "CM STORY는 스포츠를 단순한 운동이 아닌 ‘참여형 콘텐츠’로 재정의하는 기업입니다.\n우리는 실제 타격, 실제 플레이, 실제 경쟁이 일어나는 현장 중심의 스포츠 경험을 기술과 데이터로 연결하여 지속 가능한 플랫폼으로 발전시키고 있습니다." 
-                        : "CM STORY redefines sports not just as exercise, but as 'interactive content.' We connect field-based sports experiences—where real striking, real play, and real competition occur—with technology and data to develop them into sustainable platforms."}
+                        ? "CM STORY는 스포츠를 '참여형 콘텐츠'로 재정의합니다.\n실제 타격과 플레이가 일어나는 현장에 집중합니다.\n기술과 데이터로 스포츠 경험을 연결합니다.\n지속 가능한 비즈니스 생태계를 구축합니다." 
+                        : "CM STORY redefines sports as 'interactive content.'\nWe focus on the field where real action happens.\nWe connect experiences through tech and data.\nWe build a sustainable business ecosystem."}
                     </h3>
 
                     <div className="space-y-4 mb-10">
                       <div className="flex items-center space-x-4">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#FF003C]"></div>
                         <p className="text-[11px] font-bold text-white/60 tracking-wider">
-                          {language === 'KR' ? '현장에서 바로 수익이 발생하는 스포츠 하드웨어' : 'Sports hardware generating immediate revenue on-site'}
+                          {language === 'KR' ? '현장에서 수익이 발생하는 스포츠 하드웨어' : 'Hardware generating revenue on-site'}
                         </p>
                       </div>
                       <div className="flex items-center space-x-4">
                         <div className="w-1.5 h-1.5 rounded-full bg-[#FF003C]"></div>
                         <p className="text-[11px] font-bold text-white/60 tracking-wider">
-                          {language === 'KR' ? '사람과 팀을 연결하는 스포츠 매칭 플랫폼' : 'Sports matching platforms connecting people and teams'}
+                          {language === 'KR' ? '사람과 팀을 연결하는 매칭 플랫폼' : 'Matching platforms connecting athletes'}
                         </p>
                       </div>
                     </div>
@@ -131,8 +80,8 @@ const App: React.FC = () => {
                     <div className="border-l border-white/10 pl-10 space-y-8">
                       <p className="text-[10px] md:text-[11px] text-white/30 leading-loose font-medium tracking-wider">
                         {language === 'KR' 
-                          ? "이 두 축이 만나 하나의 생태계를 구성합니다. CM스토리는 장비 제조를 넘어 비즈니스의 정점에 도달할 수 있는 솔루션을 제공합니다."
-                          : "These two pillars meet to form a single ecosystem. CM Story provides solutions to reach the peak of business beyond equipment manufacturing."}
+                          ? "두 축이 만나 하나의 생태계를 구성합니다.\n장비 제조를 넘어 비즈니스 솔루션을 제공합니다."
+                          : "Two pillars form a single ecosystem.\nWe provide solutions beyond manufacturing."}
                       </p>
                       <button 
                         onClick={() => setCurrentPage('company')}
@@ -155,27 +104,13 @@ const App: React.FC = () => {
       case 'company':
         return <Company language={language} />;
       case 'products':
-        return (
-          <Products 
-            language={language} 
-            customBoxingImage={customBoxingImage}
-            customFootballImage={customFootballImage}
-            onBoxingUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'boxing', setCustomBoxingImage)}
-            onFootballUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'football', setCustomFootballImage)}
-          />
-        );
+        return <Products language={language} />;
       case 'solutions':
         return <Solutions language={language} onNavigate={setCurrentPage} />;
       case 'notice':
         return <Notice language={language} />;
       case 'ipcert':
-        return (
-          <IPCert 
-            language={language} 
-            customPatent={customPatent} 
-            onPatentUpload={(e) => e.target.files?.[0] && handleGenericUpload(e.target.files[0], 'patent', setCustomPatent)}
-          />
-        );
+        return <IPCert language={language} />;
       case 'contact':
         return <Contact language={language} />;
       default:
@@ -190,18 +125,17 @@ const App: React.FC = () => {
         setLanguage={setLanguage} 
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
-        customLogo={customLogo} 
-        onLogoUpload={handleLogoUpload}
       />
       
       <main>
         {renderContent()}
       </main>
 
+      {/* Added customLogo={null} to satisfy FooterProps requirement */}
       <Footer 
         language={language} 
-        customLogo={customLogo} 
         onNavigate={setCurrentPage}
+        customLogo={null}
       />
     </div>
   );

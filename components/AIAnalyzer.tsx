@@ -78,7 +78,7 @@ const AIAnalyzer: React.FC<AIAnalyzerProps> = ({ language }) => {
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* 업로드 섹션 */}
-          <div className="glass rounded-[40px] p-10 relative overflow-hidden group">
+          <div className="glass rounded-[40px] p-10 relative overflow-hidden group border border-white/5">
             <div className="absolute inset-0 bg-gradient-to-br from-[#FF003C]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             
             <input 
@@ -119,10 +119,10 @@ const AIAnalyzer: React.FC<AIAnalyzerProps> = ({ language }) => {
             <button
               onClick={analyzeImage}
               disabled={!image || loading}
-              className={`w-full mt-10 py-6 rounded-full font-black uppercase tracking-[0.3em] text-xs transition-all flex items-center justify-center space-x-4 ${
+              className={`w-full mt-10 py-6 rounded-full font-black uppercase tracking-[0.3em] text-xs transition-all flex items-center justify-center space-x-4 border ${
                 image && !loading 
-                  ? 'bg-[#FF003C] text-white shadow-[0_20px_40px_rgba(255,0,60,0.3)] hover:scale-105 active:scale-95' 
-                  : 'bg-white/5 text-white/20 cursor-not-allowed'
+                  ? 'bg-black text-white border-[#FF003C]/50 shadow-[0_10px_30px_rgba(255,0,60,0.1)] hover:bg-[#FF003C] hover:border-[#FF003C] hover:shadow-[0_20px_40px_rgba(255,0,60,0.3)] hover:scale-105 active:scale-95' 
+                  : 'bg-white/5 text-white/20 border-white/5 cursor-not-allowed'
               }`}
             >
               {loading ? (
@@ -145,7 +145,7 @@ const AIAnalyzer: React.FC<AIAnalyzerProps> = ({ language }) => {
               </h4>
             </div>
 
-            <div className="flex-grow glass rounded-[40px] p-10 relative overflow-hidden">
+            <div className="flex-grow glass rounded-[40px] p-10 relative overflow-hidden border border-white/5">
                {loading && (
                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#FF003C] to-transparent animate-[shimmer_2s_infinite]"></div>
                )}

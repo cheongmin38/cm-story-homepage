@@ -15,33 +15,53 @@ const FAQ: React.FC<FAQProps> = ({ language }) => {
   };
 
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-4xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <h3 className="text-3xl font-black text-slate-900 mb-4 uppercase">FAQ</h3>
-          <p className="text-slate-500">
-            {language === 'KR' ? '도입 전 궁금하신 사항들을 확인해 보세요.' : 'Commonly asked questions.'}
-          </p>
+    <section className="py-40 bg-black relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
+      
+      <div className="max-w-4xl mx-auto px-6 relative z-10">
+        <div className="text-center mb-24">
+          <h2 className="label-engineered mb-8">
+            {language === 'KR' ? '자주 묻는 질문' : 'SUPPORT & FAQ'}
+          </h2>
+          <h3 className="text-5xl md:text-6xl font-[900] text-white tracking-tighter uppercase leading-none">
+            {language === 'KR' ? '무엇을 도와드릴까요?' : 'HOW CAN WE HELP?'}
+          </h3>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {FAQS.map((faq, idx) => (
-            <div key={idx} className="border border-slate-200 rounded-xl overflow-hidden transition-all">
+            <div 
+              key={idx} 
+              className={`glass rounded-[32px] overflow-hidden transition-all duration-500 border ${
+                activeIndex === idx ? 'border-[#FF003C]/50 bg-white/[0.05]' : 'border-white/5 hover:border-white/20'
+              }`}
+            >
               <button 
                 onClick={() => toggle(idx)}
-                className="w-full flex justify-between items-center px-6 py-5 bg-white hover:bg-slate-50 transition-colors text-left"
+                className="w-full flex justify-between items-center px-10 py-8 text-left transition-colors"
               >
-                <span className="font-bold text-slate-800 pr-4">{faq.question[language]}</span>
-                <svg 
-                  className={`w-5 h-5 text-slate-400 transition-transform ${activeIndex === idx ? 'rotate-180' : ''}`} 
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <div className="flex items-center space-x-6">
+                  <span className={`text-[10px] font-black transition-colors ${activeIndex === idx ? 'text-[#FF003C]' : 'text-white/20'}`}>
+                    Q{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
+                  </span>
+                  <span className={`text-lg font-bold tracking-tight transition-colors ${activeIndex === idx ? 'text-white' : 'text-white/60'}`}>
+                    {faq.question[language]}
+                  </span>
+                </div>
+                <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all duration-500 ${
+                  activeIndex === idx ? 'bg-[#FF003C] border-[#FF003C] rotate-180' : 'border-white/10 text-white/30'
+                }`}>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
               </button>
-              <div className={`overflow-hidden transition-all duration-300 ${activeIndex === idx ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="px-6 py-5 bg-slate-50 text-slate-600 text-sm leading-relaxed border-t border-slate-100">
-                  {faq.answer[language]}
+              <div className={`transition-all duration-700 ease-in-out ${activeIndex === idx ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                <div className="px-10 pb-10 pt-2">
+                  <div className="w-full h-[1px] bg-white/5 mb-8"></div>
+                  <p className="text-white/40 text-lg leading-relaxed font-medium tracking-tight border-l-2 border-[#FF003C]/30 pl-8">
+                    {faq.answer[language]}
+                  </p>
                 </div>
               </div>
             </div>

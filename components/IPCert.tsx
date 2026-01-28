@@ -1,66 +1,11 @@
 
-import React, { useEffect, useRef } from 'react';
-import { CERTIFICATIONS } from '../constants';
+import React, { useEffect, useRef, useState } from 'react';
+import { CERTIFICATIONS, ASSET_PATHS } from '../constants';
 import { Language } from '../types';
 
-interface IPCertProps { 
-  language: Language; 
-  customPatent: string | null;
-  onPatentUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-const PatentCertificate: React.FC<{ 
-  customPatent: string | null; 
-  onUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}> = ({ customPatent, onUpload }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  return (
-    <div className="relative w-full max-w-md mx-auto aspect-[1/1.414] bg-[#111] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10 p-2 overflow-hidden group rounded-lg">
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        onChange={onUpload} 
-        className="hidden" 
-        accept="image/*"
-      />
-      
-      <div 
-        className="relative w-full h-full bg-[#0A0A0A] overflow-hidden flex flex-col cursor-pointer"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        {customPatent ? (
-          <div className="relative w-full h-full">
-            <img 
-              src={customPatent} 
-              alt="Uploaded Patent" 
-              className="w-full h-full object-contain opacity-90 group-hover:opacity-100 transition-opacity" 
-            />
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-               <div className="bg-white text-black px-4 py-2 text-[10px] font-black uppercase tracking-widest shadow-2xl">
-                 이미지 교체하기
-               </div>
-            </div>
-          </div>
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-white/5 group-hover:border-[#FF003C] transition-colors bg-white/[0.02]">
-            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center shadow-lg mb-4 group-hover:scale-110 transition-transform">
-              <svg className="w-8 h-8 text-white/20 group-hover:text-[#FF003C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-              </svg>
-            </div>
-            <p className="text-[11px] font-black uppercase tracking-widest text-white/30 group-hover:text-[#FF003C] text-center leading-relaxed">
-              직접 준비하신<br/>특허증 이미지를 업로드하세요
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const IPCert: React.FC<IPCertProps> = ({ language, customPatent, onPatentUpload }) => {
+const IPCert: React.FC<{ language: Language }> = ({ language }) => {
   const sectionRef = useRef<HTMLElement>(null);
+  const [patentError, setPatentError] = useState(false);
   
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -77,47 +22,72 @@ const IPCert: React.FC<IPCertProps> = ({ language, customPatent, onPatentUpload 
   ];
 
   return (
-    <section id="ipcert" className="py-32 bg-black overflow-hidden border-t border-white/5" ref={sectionRef}>
+    <section id="ipcert" className="py-40 bg-black overflow-hidden border-t border-white/5" ref={sectionRef}>
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-20 items-center mb-24">
-          <div className="reveal order-2 lg:order-1">
-             <PatentCertificate customPatent={customPatent} onUpload={onPatentUpload} />
+        <div className="grid lg:grid-cols-2 gap-24 items-center mb-32">
+          <div className="reveal order-2 lg:order-1 flex justify-center">
+             <div className="relative w-full max-w-md mx-auto aspect-[1/1.414] bg-[#050505] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] border border-white/10 p-2 overflow-hidden flex flex-col justify-center items-center rounded-xl group">
+                <div className="absolute inset-0 bg-grid opacity-5 pointer-events-none"></div>
+                {!patentError ? (
+                  <img 
+                    src={ASSET_PATHS.patent_certificate} 
+                    className="w-full h-full object-contain p-4" 
+                    alt="Patent Certificate"
+                    onError={() => setPatentError(true)}
+                  />
+                ) : (
+                  <div className="text-center p-8 flex flex-col items-center opacity-30">
+                    <div className="w-20 h-20 border border-dashed border-white/20 rounded-full flex items-center justify-center mb-6">
+                      <svg className="w-8 h-8 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.4em]">
+                      PATENT_ASSET_PENDING
+                    </p>
+                    <p className="mt-4 text-[8px] font-bold text-white/20 uppercase tracking-widest">
+                      Path: {ASSET_PATHS.patent_certificate}
+                    </p>
+                  </div>
+                )}
+                <div className="absolute bottom-6 left-6 right-6 bg-black/80 backdrop-blur-md border border-white/5 p-4 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 rounded-full bg-[#FF003C]"></div>
+                    <span className="text-[8px] font-black tracking-widest text-white/60 uppercase">CERTIFIED_STABLE_DOCUMENT</span>
+                  </div>
+                </div>
+             </div>
           </div>
-          
           <div className="reveal order-1 lg:order-2">
-            <h2 className="text-[11px] font-black text-[#FF003C] tracking-[0.4em] uppercase mb-6 flex items-center">
-              <span className="w-8 h-[2px] bg-[#FF003C] mr-4"></span>
+            <h2 className="label-engineered mb-8">
               {language === 'KR' ? '지식재산권 및 기술 인증' : 'Intellectual Property'}
             </h2>
-            <h3 className="text-5xl md:text-6xl font-black text-white tracking-tighter uppercase mb-8 leading-[0.95]">
+            <h3 className="text-5xl md:text-7xl font-[900] text-white tracking-[-0.05em] uppercase mb-12 leading-[0.9]">
               {language === 'KR' ? "특허로 증명된\n독보적 기술력" : "Verified By\nCore Patents"}
             </h3>
-            <p className="text-lg text-white/40 font-medium mb-10 leading-relaxed max-w-xl">
-              {language === 'KR' 
-                ? "CM스토리는 '복싱유희기구(제 10-2863896 호)'를 비롯한 핵심 하드웨어 기술을 국가 공인 특허로 보호받고 있습니다. 고객님의 신뢰를 위해 투명하게 기술력을 공개합니다." 
-                : "CM Story's core hardware technologies, including 'Boxing Play Apparatus (No. 10-2863896)', are protected by official patents. We transparently demonstrate our technological prowess for your trust."}
-            </p>
-            
-            <div className="space-y-4">
+            <div className="max-w-xl border-l-2 border-[#FF003C] pl-10 mb-16">
+              <p className="text-xl text-white/40 font-medium leading-relaxed tracking-tight whitespace-pre-line">
+                {language === 'KR' 
+                  ? "복싱유희기구 핵심 기술을 특허로 보호합니다.\n국가 공인 특허로 원천 기술을 증명합니다.\n모방할 수 없는 기술력으로 신뢰를 쌓습니다.\n우리는 당신의 가장 강력한 비즈니스 파트너입니다." 
+                  : "Core technologies are protected by patents.\nOriginal tech verified by official certification.\nUnstoppable innovation builds lasting trust.\nWe are your strongest business partner."}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {CERTIFICATIONS.map((cert, idx) => (
-                <div key={idx} className="flex items-center space-x-6 p-4 bg-white/[0.03] border border-white/5 group hover:border-[#FF003C]/50 transition-all rounded-lg">
-                  <div className="w-2 h-2 bg-[#FF003C]"></div>
-                  <div>
-                    <div className="text-xs font-black text-white/80 uppercase tracking-tight">{cert.title}</div>
-                    <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{cert.detail}</div>
-                  </div>
+                <div key={idx} className="flex flex-col p-6 bg-white/[0.03] border border-white/5 group hover:border-[#FF003C]/50 transition-all rounded-2xl">
+                  <div className="text-[10px] font-black text-[#FF003C] uppercase tracking-[0.3em] mb-2">{cert.title}</div>
+                  <div className="text-sm font-bold text-white/60 tracking-tight">{cert.detail}</div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-
         <div className="grid md:grid-cols-3 gap-8">
           {certCards.map((item, i) => (
-            <div key={i} className="bg-white/[0.02] p-12 reveal border border-white/5 rounded-[30px] hover:bg-white/[0.04] transition-colors" style={{ transitionDelay: `${(i + 3) * 0.1}s` }}>
-              <div className="text-4xl font-black text-white/5 mb-8 italic">{item.tag}</div>
-              <h5 className="text-sm font-black uppercase tracking-widest mb-4 text-[#FF003C]">{item.title[language]}</h5>
-              <p className="text-xs text-white/40 leading-relaxed font-medium">{item.desc[language]}</p>
+            <div key={i} className="bg-white/[0.02] p-16 reveal border border-white/5 rounded-[48px] hover:bg-white/[0.04] transition-all group" style={{ transitionDelay: `${(i + 3) * 0.1}s` }}>
+              <div className="text-5xl font-black text-white/[0.03] group-hover:text-[#FF003C]/10 mb-10 italic transition-colors leading-none">{item.tag}</div>
+              <h5 className="text-[11px] font-black uppercase tracking-[0.4em] mb-6 text-[#FF003C]">{item.title[language]}</h5>
+              <p className="text-sm text-white/40 leading-relaxed font-medium tracking-tight">{item.desc[language]}</p>
             </div>
           ))}
         </div>

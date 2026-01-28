@@ -95,8 +95,10 @@ const Contact: React.FC<ContactProps> = ({ language }) => {
                 
                 <button 
                   disabled={formStatus === 'submitting'}
-                  className={`w-full py-6 font-black uppercase tracking-[0.4em] text-xs transition-all ${
-                    formStatus === 'success' ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-[#FF003C] hover:text-white'
+                  className={`w-full py-6 font-black uppercase tracking-[0.4em] text-xs transition-all border ${
+                    formStatus === 'success' 
+                      ? 'bg-green-500 border-green-500 text-white' 
+                      : 'bg-black text-white border-[#FF003C]/50 hover:bg-[#FF003C] hover:border-[#FF003C]'
                   }`}
                 >
                   {formStatus === 'submitting' ? (language === 'KR' ? '처리 중...' : 'Processing...') : formStatus === 'success' ? (language === 'KR' ? '전송 완료' : 'Request Sent') : (language === 'KR' ? '상담 신청하기' : 'Execute Inquiry')}

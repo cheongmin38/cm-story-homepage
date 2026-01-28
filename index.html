@@ -7,7 +7,7 @@
     <title>CM STORY | Precision Sports Technology</title>
     <meta name="description" content="CM스토리는 하드웨어 개발·제조부터 운영/콘텐츠까지 한 번에 설계합니다.">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <style>
         :root {
@@ -15,13 +15,17 @@
             --bg-deep: #000000;
             --bg-elevated: #050505;
             --text-dim: #888888;
+            --font-main: "Inter", "Pretendard Variable", -apple-system, sans-serif;
         }
+        
         body { 
-            font-family: "Pretendard Variable", "Inter", -apple-system, sans-serif; 
+            font-family: var(--font-main);
             background-color: var(--bg-deep);
             color: white;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            /* Engineered Typography: Inter features for a technical look */
+            font-feature-settings: 'tnum' on, 'cv05' on, 'cv11' on, 'ss01' on;
         }
         
         /* Premium Custom Scrollbar */
@@ -31,15 +35,31 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
         .glass {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .text-gradient {
-            background: linear-gradient(180deg, #FFFFFF 0%, #888888 100%);
+            background: linear-gradient(180deg, #FFFFFF 0%, #A0A0A0 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        /* Confident Heading Style */
+        .heading-premium {
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1;
+        }
+
+        /* Engineered Label Style */
+        .label-engineered {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4em;
+            color: var(--accent);
         }
 
         .reveal {
@@ -52,7 +72,6 @@
             transform: translateY(0);
         }
 
-        /* Movement-free reveal */
         .fade-only {
             opacity: 0;
             transition: opacity 1.5s ease-out;
@@ -63,20 +82,33 @@
 
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-10px); }
             100% { transform: translateY(0px); }
         }
         .float-animation { animation: float 6s ease-in-out infinite; }
 
         .bento-card {
             background: var(--bg-elevated);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            border: 1px solid rgba(255,255,255,0.03);
+            transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
         .bento-card:hover {
-            border-color: rgba(255,0,60,0.3);
-            background: rgba(255,255,255,0.02);
-            transform: scale(1.02);
+            border-color: rgba(255,0,60,0.4);
+            background: rgba(255,255,255,0.015);
+            transform: translateY(-5px);
+        }
+        
+        /* Grid background for industrial feel */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+        }
+
+        input, select, textarea {
+            font-family: var(--font-main);
+            letter-spacing: -0.01em;
         }
     </style>
 <script type="importmap">

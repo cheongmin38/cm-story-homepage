@@ -9,19 +9,19 @@ interface LanguageToggleProps {
 
 const LanguageToggle: React.FC<LanguageToggleProps> = ({ language, setLanguage }) => {
   return (
-    <div className="flex bg-slate-100 p-1 rounded-full border border-slate-200">
+    <div className="flex bg-white/5 p-1 rounded-full border border-white/10 backdrop-blur-md">
       <button
         onClick={() => setLanguage('KR')}
-        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-          language === 'KR' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'
+        className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest transition-all duration-500 ${
+          language === 'KR' ? 'bg-[#FF003C] text-white shadow-lg shadow-[#FF003C]/20' : 'text-white/30 hover:text-white/60'
         }`}
       >
         KR
       </button>
       <button
         onClick={() => setLanguage('EN')}
-        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-          language === 'EN' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'
+        className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest transition-all duration-500 ${
+          language === 'EN' ? 'bg-[#FF003C] text-white shadow-lg shadow-[#FF003C]/20' : 'text-white/30 hover:text-white/60'
         }`}
       >
         EN
