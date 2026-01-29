@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { PRODUCTS, ASSET_PATHS } from '../constants';
+import { PRODUCTS, ASSET_PATHS, BASE64_ASSETS } from '../constants';
 import { Language, ProductItem } from '../types';
 
 interface ProductImageProps {
@@ -10,9 +10,12 @@ interface ProductImageProps {
 
 const ProductImage: React.FC<ProductImageProps> = ({ id, language }) => {
   const [error, setError] = useState(false);
+  
+  // 데이터가 있으면 Base64 데이터 상수를, 없으면 경로 상수를 참조합니다.
   const path = id === 'boxing' ? ASSET_PATHS.boxing_machine : ASSET_PATHS.football_platform;
+  const isBase64 = path.startsWith('data:image');
 
-  if (error) {
+  if (error || (!isBase64 && !path)) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center bg-[#080808] rounded-[40px] border border-white/5 relative overflow-hidden group">
         <div className="absolute inset-0 bg-grid opacity-5"></div>
@@ -26,8 +29,8 @@ const ProductImage: React.FC<ProductImageProps> = ({ id, language }) => {
             {language === 'KR' ? '기기 이미지 대기' : 'PENDING STABLE ASSET'}
           </p>
           <div className="px-6 py-2 bg-white/5 rounded-full">
-            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20">
-              {path}
+            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 truncate max-w-[200px]">
+              {isBase64 ? 'Embedded Base64 Data' : path}
             </p>
           </div>
         </div>

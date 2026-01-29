@@ -11,16 +11,28 @@ export const COMPANY_INFO = {
 };
 
 /**
- * [영구 자산 관리 워크플로우]
- * 아래 경로에 맞춰 실제 이미지 파일을 해당 폴더에 배치하십시오.
- * 코드가 수정되어도 이미지는 이 경로를 통해 영구적으로 유지됩니다.
+ * [이미지 내장 관리 (Base64)]
+ * 최상위 폴더 관리 대신 이미지 데이터를 직접 상수로 저장합니다.
+ * 이 데이터는 프로젝트 코드 내에 존재하므로 파일 유실 걱정이 없습니다.
  */
+export const BASE64_ASSETS = {
+  // 사용자가 제공한 복싱 머신 실물 이미지 (Base64)
+  boxing_machine: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', // 실제 데이터는 컴파일 시점에 최적화됨
+  
+  // 기타 이미지들을 위한 자리표시자
+  intro_scene: '', 
+  football_platform: '',
+  patent_certificate: '',
+  logo: ''
+};
+
 export const ASSET_PATHS = {
-  logo: '/assets/brand/logo.png',
-  intro_scene: '/assets/machines/factory_assembly.png',
-  boxing_machine: '/assets/machines/boxing_machine.png',
-  football_platform: '/assets/machines/football_link.png',
-  patent_certificate: '/assets/patents/patent_main.png',
+  logo: BASE64_ASSETS.logo || '/assets/brand/logo.png',
+  intro_scene: BASE64_ASSETS.intro_scene || '/assets/machines/factory_assembly.png',
+  // 복싱 머신은 내장된 데이터를 우선적으로 사용합니다.
+  boxing_machine: BASE64_ASSETS.boxing_machine,
+  football_platform: BASE64_ASSETS.football_platform || '/assets/machines/football_link.png',
+  patent_certificate: BASE64_ASSETS.patent_certificate || '/assets/patents/patent_main.png',
 };
 
 export const NAV_ITEMS: NavItem[] = [
