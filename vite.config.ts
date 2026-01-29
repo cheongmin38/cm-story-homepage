@@ -1,23 +1,30 @@
-import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ mode }) => {
-    const env = loadEnv(mode, '.', '');
-    return {
-      server: {
-        port: 3000,
-        host: '0.0.0.0',
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    // 청크 크기 경고 제한을 1000kb로 상향 (대형 라이브러리 사용 시 권장)
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        // 대형 라이브러리들을 별도의 파일로 분리하여 메인 청크 크기 감소
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('three')) {
+              return 'vendor-three';
+            }
+            if (id.includes('@google/genai')) {
+              return 'vendor-genai';
+            }
+            if (id.includes('react')) {
+              return 'vendor-react';
+            }
+            return 'vendor-others';
+          }
+        },
       },
-      plugins: [react()],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
-      resolve: {
-        alias: {
-          '@': path.resolve(__dirname, '.'),
-        }
-      }
-    };
+    },
+  },
 });
